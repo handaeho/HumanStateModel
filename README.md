@@ -1,6 +1,6 @@
 # WTC_deepview
 
-## Prerequisite programs
+## Prerequisite Programs
 ```
 1. conda 설치
 	<리눅스>
@@ -178,4 +178,158 @@
 
 8. opencv(cpu 버전) 설치 -> 만약 opencv-GPU 버전이 필요하다면, make 명령어 써 놓은것 참고
 	$ pip install opencv-python
+```
+
+## Prerequisite Models
+```
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[object detection]
+python demo.py --config-file configs/faster_rcnn_V_19_slim_FPNLite_3x.yaml --video-input /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_003.mp4 --output /home/gaion/WTC_Seoul/wtc_seoul/vedios_result --opts MODEL.WEIGHTS weights/faster_rcnn_V_19_eSE_slim_FPNLite_ms_3x.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[keypoint]
+python demo.py --config-file configs/keypoint_V_39_FPN_3x.yaml --input //home/gaion/WTC_Seoul/wtc_seoul/images/human_keypoint_test.jpg --output /home/gaion/WTC_Seoul/wtc_seoul/images_result --opts MODEL.WEIGHTS weights/keypoint_vovnet39.pth
+python demo.py --config-file configs/keypoint_V_39_FPN_3x.yaml --video-input /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_003.mp4 --output /home/gaion/WTC_Seoul/wtc_seoul/vedios_result --opts MODEL.WEIGHTS weights/keypoint_vovnet39.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[instance segmentation] --> output에서 파일 이름 맨뒤에 숫자가 들어가면 안됨. 따라서 input도 숫자 없이 하기.
+python demo/demo.py --config-file configs/centermask_lite_V_39_eSE_FPN_ms_4x.yaml --video-input /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv.mp4 --output /home/gaion/WTC_Seoul/wtc_seoul/vedios_result --opts MODEL.WEIGHTS weights/centermask_lite_V_39_eSE_FPN_ms_4x.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[keypoint webcam]
+python demo.py --config-file configs/keypoint_V_39_FPN_3x.yaml --webcam --opts MODEL.WEIGHTS weights/keypoint_vovnet39.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[segmentation webcam]
+python demo/demo.py --config-file configs/centermask_lite_V_39_eSE_FPN_ms_4x.yaml --webcam --opts MODEL.WEIGHTS weights/centermask_lite_V_39_eSE_FPN_ms_4x.pth 
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[human-state video]
+python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /path/to/video MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+-> python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_001.mp4 --output_dir /home/gaion/WTC_Seoul/wtc_seoul/vedios_result MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+-> python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_002.mp4 --output_dir /home/gaion/WTC_Seoul/wtc_seoul/vedios_result MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+-> python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_003.mp4 --output_dir /home/gaion/WTC_Seoul/wtc_seoul/vedios_result MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[human-state webcam]
+python infer_webcam.py --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[human-state pred_rtsp_gaion]
+python pred_rtsp_gaion.py --rtsp_channels=[0] --num-gpus=1 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth 
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[human-state infer_rtsp_gpu]
+python infer_rtsp_gpu.py --rtsp_channels=[0] --num-gpus=1 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth 
+python infer_rtsp_gpu.py --rtsp_channels=[0] --num-gpus=8 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml 
+python test_001.py --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+python test_002.py --rtsp_channels=[0,1,2,3,4,5,6,7] --num-gpus=8 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+python test_002.py --rtsp_channels=[0] --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+>>>>> ETRI HESNET <<<<<
+[human-state hsenet_test.py]
+python hsenet_test.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+[human-state hsenet_vms.py]
+python hsenet_vms.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+[human-state hsenet_vms_multi.py]
+python hsenet_vms_multi.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+[human-state hsenet_vms_th.py] --> detectron2 모델은 muti-GPU 환경에서의 연산이 불가능하다
+python hsenet_vms_th.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+[human-state hsenet_vms_batch.py] --> 그래서 그냥 batch 형태로 GPU 수만큼 나누어서 각 GPU에 py 파일 올리고 실행(1 GPU 1 model)
+python hsenet_vms_batch.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+------------------------------------------------------------------------------------------------------------------------------------------------------
+[human-state hsenet_batch_gaion.py]
+python hsenet_batch_gaion.py
+[human-state hsenet_batch_gaion.py] --> GPU 할당 후 실행(ex) 0번 GPU)
+CUDA_VISIBLE_DEVICES=0 python hsenet_batch_gaion.py
+```
+
+## Command Collection Programs
+```
+[ETRI training]
+python train_net_etri.py --config configs/etri_ver_hsenet_config.yaml --num-gpus 8 --resume
+===========================================================================================
+[Tensor Board]
+tensorboard --logdir checkpoints/ --port 9999 --bind_all
+===========================================================================================
+[training with F1 Score, Presicion, Recall]
+> just inference
+python hsenet_gaion_train_net.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+> if you want training, remove --eval-only
+python hsenet_gaion_train_net.py --num-gpus 8 --config ./configs/gaion_ver_hsenet_config.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+> 3 Class 훈련
+python hsenet_gaion_train_net_3.py --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./checkpoints/gaion_ver_train_100000_0_02_3class/model_final.pth
+
+> 3 Class 평가
+python hsenet_gaion_train_net_3.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./checkpoints/gaion_ver_train_100000_0_02_3class/model_final.pth
+
+python hsenet_gaion_train_net_3.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./weights/model_100000.pth
+
+> 6 Class 훈련
+python hsenet_gaion_train_net_6.py --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_6.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+> 6 Class 평가
+python hsenet_gaion_train_net_6.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_6.yaml MODEL.WEIGHTS ./weights/model_final.pth
+===========================================================================================
+[FPS 측정] -> gpu-home/tiep/detectron2
+python vovnet_train_net.py --eval-only --config=configs/faster_rcnn_V_19_slim_FPNLite_3x_gaion.yaml MODEL.WEIGHTS ./checkpoints/FRCN-V2-19-slim-FPNLite-3x-gaion/model_final.pth
+===========================================================================================
+[mAP50 측정] -> IHPE test datasets + model_final.pth
+python hsenet_gaion_train_net_6.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_6.yaml MODEL.WEIGHTS ./weights/model_final.pth
+===========================================================================================
+[F1-Score 측정] =====>>>>> 모델 이름 수정 필요(뭘로 쓸건지?)
+python hsenet_gaion_train_net_3.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./checkpoints/gaion_ver_train_100000_0_02_3class/model_final.pth
+===========================================================================================
+```
+
+## Command OpenCV-GPU Installation
+```
+1. 설치된 OpenCV 확인
+	$ pkg-config --modversion opencv 
+	(버전 안나오면 설치 X, 나오면)
+	$ sudo apt-get purge  libopencv* python-opencv
+	$ sudo apt-get autoremove
+
+2. 기존 설치된 패키지 업그레이드
+	$ sudo apt-get update
+	$ sudo apt-get upgrade
+
+3. OpenCV 컴파일 전 필요한 패키지 설치
+	$ sudo apt-get install build-essential cmake
+	$ sudo apt-get install pkg-config
+	$ sudo apt-get install libjpeg-dev libtiff5-dev libpng-dev
+	$ sudo apt-get install ffmpeg libavcodec-dev libavformat-dev libswscale-dev libxvidcore-dev libx264-dev libxine2-dev
+	$ sudo apt-get install libv4l-dev v4l-utils
+	$ sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev 
+	$ sudo apt-get install libgtk-3-dev
+	$ sudo apt-get install mesa-utils libgl1-mesa-dri libgtkgl2.0-dev libgtkglext1-dev
+	$ sudo apt-get install libatlas-base-dev gfortran libeigen3-dev
+	$ sudo apt-get install python3-dev python3-numpy
+4. 설치
+	$ cd opencv_etri
+	$ mkdir bulid
+	$ cd bulid
+	$ /usr/bin/cmake -B build -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/home/gaion/anaconda3/envs/wtc -D INSTALL_PYTHON_EXAMPLES=OFF \ 
+	-D INSTALL_C_EXAMPLES=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_PACKAGE=OFF -D BUILD_EXAMPLES=OFF -D WITH_TBB=ON \
+        -D ENABLE_FAST_MATH=1 -D CUDA_FAST_MATH=1 -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda -D WITH_CUDA=ON -D WITH_CUBLAS=ON \
+        -D WITH_CUFFT=ON -D WITH_NVCUVID=ON -D WITH_IPP=OFF -D WITH_V4L=ON -D WITH_1394=OFF -D WITH_GTK=ON -D WITH_QT=OFF \
+        -D WITH_OPENGL=OFF -D WITH_EIGEN=ON -D WITH_FFMPEG=ON -D WITH_GSTREAMER=ON -D BUILD_JAVA=OFF \
+        -D BUILD_opencv_python3=ON -D BUILD_opencv_python2=OFF -D BUILD_NEW_PYTHON_SUPPORT=ON \
+        -D OPENCV_SKIP_PYTHON_LOADER=ON -D OPENCV_GENERATE_PKGCONFIG=ON -D OPENCV_ENABLE_NONFREE=ON \
+        -D OPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_CUDNN=ON -D BUILD_opencv_cudev=ON \
+        -D CUDA_ARCH_BIN=5.0:5.2:6.0:6.1:7.0:7.5:8.0:8.6 -D CUDA_ARCH_PTX=5.0:5.2:6.0:6.1:7.0:7.5:8.0:8.6 -D WITH_NVCUVID=ON \
+        -D BUILD_opencv_cudacodec=ON -D BUILD_opencv_xphoto=OFF -D BUILD_opencv_xfeatures2d=OFF -D BUILD_opencv_ximgproc=OFF \
+        -D BUILD_opencv_xobjdetect=OFF -D BUILD_opencv_python_bindings_generator=ON -D PYTHON3_LIBRARY=/home/gaion/anaconda3/envs/wtc/lib/python3.10 \
+        -D PYTHON3_INCLUDE_DIR=/home/gaion/anaconda3/envs/wtc/include/python3.10 \
+        -D PYTHON3_EXECUTABLE=/home/gaion/anaconda3/envs/wtc/bin/python \
+        -D PYTHON3_PACKAGES_PATH=/home/gaion/anaconda3/envs/wtc/lib/python3.10/site-packages \
+        -D PYTHON3_NUMPY_INCLUDE_DIRS=/home/gaion/anaconda3/envs/wtc/lib/python3.10/site-packages/numpy/core/include \
+        -D OPENCV_PYTHON3_VERSION=3.10 -D CMAKE_INSTALL_PREFIX=/home/gaion/anaconda3/envs/wtc opencv
+
+	$ make all -j 40 -C build
+
+	$ make install -j 40 -C build
+
+
+[ERROR 처리]
+>> CUDA_ERROR_FILE_NOT_FOUND [Code = 301] in function 'CuvidVideoSource' -> make 할 때 ffmpeg YES/NO 확인
+=> sudo apt install pkg-config     
+sudo apt install ffmpeg libavformat-dev libavcodec-dev libswscale-dev 
+
+>> The function is not implemented. Rebuild the library with Windows, GTK+ 2.x or Cocoa support. If you are on Ubuntu or Debian, install libgtk2.0-dev and pkg-config, then re-run cmake or configure script in function 'cvShowImage'
+=> sudo apt-get install libgtk2.0-dev pkg-config
 ```
