@@ -1,0 +1,171 @@
+1. conda 설치
+	<리눅스>
+		$ sudo apt-get update
+		$ sudo apt-get install curl -y
+		$ curl --output anaconda.sh https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
+		$ sha256sum anaconda.sh
+		$ bash anaconda.sh
+		$ sudo vi ~/.bashrc
+			export PATH=~/anaconda3/bin:~/anaconda3/condabin:$PATH
+		
+			<이건 199번 서버에만 해당>
+				# >>> conda initialize >>>
+				# !! Contents within this block are managed by 'conda init' !!
+				__conda_setup="$('/home/gaion/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+				if [ $? -eq 0 ]; then
+					eval "$__conda_setup"
+				else
+					if [ -f "/home/gaion/anaconda3/etc/profile.d/conda.sh" ]; then
+        	    				. "/home/gaion/anaconda3/etc/profile.d/conda.sh"
+    					else
+        					export PATH="/home/gaion/anaconda3/bin:$PATH"
+    					fi
+				fi
+				unset __conda_setup
+				# <<< conda initialize <<<
+
+		$ source ~/.bashrc
+		$ conda -V
+	
+	<윈도우>
+		$ https://www.anaconda.com/ 접속 후 다운로드
+	
+2. conda 가상환경 생성(with python 3.10)
+	$ conda create -n wtc python=3.10
+
+3. NVIDIA 그래픽 드라이버 설치
+	1) nvidia 드라이버 삭제
+		$ sudo apt-get remove --purge nvidia-*
+		$ sudo apt-get autoremove
+		$ sudo apt-get update
+		(확인)
+		$ sudo dpkg -l | grep nvidia
+		(아무것도 안나오면 완료. 아니라면,)
+		$ sudo apt-get remove --purge [지울이름]
+	2) nvidia 드라이버 설치
+		$ ubuntu-drivers devices
+		$ sudo apt-get install nvidia-driver-525
+		$ sudo apt-get install dkms nvidia-modprobe
+		$ sudo apt-get update
+		$ sudo apt-get upgrade
+		$ sudo reboot
+	3) Failed to initialize NVML: Driver/library version mismatch 에러 발생 시
+		1) 로딩되어 있는 nvidia driver kernel을 확인
+			$ lsmod | grep nvidia
+		2) nvidia driver kernel들을 unload 해준다. 순서대로 입력.
+			$ sudo rmmod nvidia_drm
+			$ sudo rmmod nvidia_modeset
+			$ sudo rmmod nvidia_uvm
+			$ sudo rmmod nvidia
+			- rmmod: ERROR: Module nvidia_drm is in use 발생 시
+				$ systemctl isolate multi-user.target
+				$ modprobe -r nvidia-drm
+				$ systemctl start graphical.target
+				$ sudo rmmod nvidia_drm -> 재시도
+			-  rmmod: ERROR: Module nvidia_uvm is in use 또는 rmmod: ERROR: Module nvidia is in use 발생 시
+				- nvidia와 관련된 프로세스 번호를 추출하여 kill 해준다.
+				$ sudo lsof /dev/nvidia* | awk 'NR > 1 {print $2}' | sudo xargs kill
+				$ sudo rmmod nvidia_uvm 또는 $ sudo rmmod nvidia -> 재시도
+		3)  다시 한 번 로딩되어 있는 nvidia driver kernel을 확인.
+			$ lsmod | grep nvidia
+			(아무 것도 뜨지 않는다면 성공)
+		4) 확인
+			$ nvidia-smi
+
+4. CUDA 11.7.0 설치 -> 	https://vividian.net/2022/11/1111 참고
+	1) https://developer.nvidia.com/cuda-toolkit-archive 이동
+	2) CUDA Toolkit 11.7 Runfile 다운로드 및 설치
+		$ wget https://developer.download.nvidia.com/compute/cuda/11.7.0/local_installers/cuda_11.7.0_515.43.04_linux.run
+		$ sudo sh cuda_11.7.0_515.43.04_linux.run
+	3) nvidia 드라이버를 이미 설치했으므로, Driver는 제외하고 나머지 설치
+	4) 환경변수 설정
+		$ sudo sh -c "echo 'export PATH=$PATH:/usr/local/cuda-11.7/bin'>> /etc/profile"
+		$ sudo sh -c "echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.7/lib64'>> /etc/profile"
+		$ sudo sh -c "echo 'export CUDADIR=/usr/local/cuda-11.7'>> /etc/profile"
+		$ source /etc/profile
+	5) CUDA 삭제
+		$ sudo rm -rf /usr/local/cuda*
+		$ sudo apt-get remove --purge cuda*
+		$ sudo apt-get autoremove --purge 'cuda*'
+		$ sudo apt-get update
+		(확인)
+		$ sudo dpkg -l | grep cuda
+		(아무것도 안나오면 완료. 아니라면,)
+		- sudo apt-get remove --purge [지울이름]
+
+5. cuDNN v8.4.1 설치 -> https://vividian.net/2022/11/1111 참고
+	1) https://developer.nvidia.com/cudnn 이동
+	2) Download cuDNN v8.4.1 (May 27th, 2022), for CUDA 11.x 선택 후, Local Installer for Linux x86_64 (Tar) 다운로드
+	3) 다운로드 받은 cuDNN 압축 풀기
+		$ tar -xvf cudnn-linux-~~~.tar.xz
+	4) /usr/local/cuda 디렉토리로 복사
+		$ cd cudnn-linux-~~~
+		$ sudo cp include/cudnn* /usr/local/cuda/include
+		$ sudo cp lib/libcudnn* /usr/local/cuda/lib64
+		$ sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+	5) cuda 디렉토리와 실제 설치된 cuda-11.7 디렉토리를 심볼릭 링크 설정 -> 버전 잘 확인하기
+		$ sudo ln -sf /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_adv_train.so.8.4.1 /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_adv_train.so.8
+		$ sudo ln -sf /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_ops_infer.so.8.4.1  /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_ops_infer.so.8
+		$ sudo ln -sf /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_cnn_train.so.8.4.1  /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_cnn_train.so.8
+		$ sudo ln -sf /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_adv_infer.so.8.4.1  /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_adv_infer.so.8
+		$ sudo ln -sf /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_ops_train.so.8.4.1  /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_ops_train.so.8
+		$ sudo ln -sf /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_cnn_infer.so.8.4.1 /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn_cnn_infer.so.8
+		$ sudo ln -sf /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn.so.8.4.1 /usr/local/cuda-11.7/targets/x86_64-linux/lib/libcudnn.so.8
+	6) cuDNN 설정이 제대로 됐는지 확인
+		$ sudo ldconfig
+		$ ldconfig -N -v $(sed 's/:/ /' <<< $LD_LIBRARY_PATH) 2>/dev/null | grep libcudnn
+	7) CUDNN 8 이후 CUDNN 버전 확인
+		cat /usr/local/cuda/include/cudnn_version.h | grep CUDNN_MAJOR -A 2
+		(안된다면)
+		cat /usr/local/cuda(설치된버전확인)/include/cudnn_version.h | grep CUDNN_MAJOR -A 2
+
+6. torch 설치
+	<GPU 버전>
+		# CUDA 11.7
+		conda install pytorch==1.13.0 torchvision==0.14.0 torchaudio==0.13.0 pytorch-cuda=11.7 -c pytorch -c nvidia
+	
+	<CPU 버전>
+		# CPU Only
+		conda install pytorch==1.13.0 torchvision==0.14.0 torchaudio==0.13.0 cpuonly -c pytorch
+
+7. detectron2 설치
+	<리눅스>
+		$ python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
+
+	<윈도우> 
+		- error : Microsoft Visual C++ 14.0 or greater is required 발생시, Microsoft Visual C++ 설치 필요함
+			- https://aka.ms/vs/17/release/vc_redist.x64.exe 다운로드 후, "C++을 사용한 데스크톱 개발"에 체크하고 설치
+		- git 설치
+			- https://git-scm.com/downloads
+			$ conda install git
+		$ pip install cython
+		$ pip install "git+https://github.com/philferriere/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI"
+		$ git clone https://github.com/facebookresearch/detectron2.git
+		$ python -m pip install -e detectron2
+
+			>> nvcc.exe failed with exit status 1 에러 발생 시,
+				1) detectron2\layers\csrc\nms_rotated\nms_rotated_cuda.cu 파일에서
+
+				2) 	#ifdef WITH_CUDA
+					#include "../box_iou_rotated/box_iou_rotated_utils.h"
+					#endif
+					// TODO avoid this when pytorch supports "same directory" hipification
+					#ifdef WITH_HIP
+					#include "box_iou_rotated/box_iou_rotated_utils.h"
+					#endif
+
+				3) 이 부분을 주석 처리하고 밑에 #include "box_iou_rotated/box_iou_rotated_utils.h"를 쓴다.
+
+				4) 	/*#ifdef WITH_CUDA
+					#include "../box_iou_rotated/box_iou_rotated_utils.h"
+					#endif
+					// TODO avoid this when pytorch supports "same directory" hipification
+					#ifdef WITH_HIP
+					#include "box_iou_rotated/box_iou_rotated_utils.h"
+					#endif*/
+					#include "box_iou_rotated/box_iou_rotated_utils.h"
+
+8. opencv(cpu 버전) 설치 -> 만약 opencv-GPU 버전이 필요하다면, make 명령어 써 놓은것 참고
+	$ pip install opencv-python
+
+

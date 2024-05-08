@@ -1,0 +1,83 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[object detection]
+python demo.py --config-file configs/faster_rcnn_V_19_slim_FPNLite_3x.yaml --video-input /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_003.mp4 --output /home/gaion/WTC_Seoul/wtc_seoul/vedios_result --opts MODEL.WEIGHTS weights/faster_rcnn_V_19_eSE_slim_FPNLite_ms_3x.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[keypoint]
+python demo.py --config-file configs/keypoint_V_39_FPN_3x.yaml --input //home/gaion/WTC_Seoul/wtc_seoul/images/human_keypoint_test.jpg --output /home/gaion/WTC_Seoul/wtc_seoul/images_result --opts MODEL.WEIGHTS weights/keypoint_vovnet39.pth
+
+python demo.py --config-file configs/keypoint_V_39_FPN_3x.yaml --video-input /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_003.mp4 --output /home/gaion/WTC_Seoul/wtc_seoul/vedios_result --opts MODEL.WEIGHTS weights/keypoint_vovnet39.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[instance segmentation] --> output에서 파일 이름 맨뒤에 숫자가 들어가면 안됨. 따라서 input도 숫자 없이 하기.
+python demo/demo.py --config-file configs/centermask_lite_V_39_eSE_FPN_ms_4x.yaml --video-input /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv.mp4 --output /home/gaion/WTC_Seoul/wtc_seoul/vedios_result --opts MODEL.WEIGHTS weights/centermask_lite_V_39_eSE_FPN_ms_4x.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[keypoint webcam]
+python demo.py --config-file configs/keypoint_V_39_FPN_3x.yaml --webcam --opts MODEL.WEIGHTS weights/keypoint_vovnet39.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[segmentation webcam]
+python demo/demo.py --config-file configs/centermask_lite_V_39_eSE_FPN_ms_4x.yaml --webcam --opts MODEL.WEIGHTS weights/centermask_lite_V_39_eSE_FPN_ms_4x.pth 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[human-state video]
+python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /path/to/video MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+-> python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_001.mp4 --output_dir /home/gaion/WTC_Seoul/wtc_seoul/vedios_result MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+-> python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_002.mp4 --output_dir /home/gaion/WTC_Seoul/wtc_seoul/vedios_result MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+-> python infer_videos.py --config configs/mphbe_hsenet_R_50_FPN_3x.yaml --video /home/gaion/WTC_Seoul/wtc_seoul/vedios/cctv_003.mp4 --output_dir /home/gaion/WTC_Seoul/wtc_seoul/vedios_result MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[human-state webcam]
+python infer_webcam.py --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[human-state pred_rtsp_gaion]
+python pred_rtsp_gaion.py --rtsp_channels=[0] --num-gpus=1 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[human-state infer_rtsp_gpu]
+python infer_rtsp_gpu.py --rtsp_channels=[0] --num-gpus=1 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth 
+
+python infer_rtsp_gpu.py --rtsp_channels=[0] --num-gpus=8 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml 
+
+python test_001.py --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+python test_002.py --rtsp_channels=[0,1,2,3,4,5,6,7] --num-gpus=8 --config-file configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+python test_002.py --rtsp_channels=[0] --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+>>>>> ETRI HESNET <<<<<
+[human-state hsenet_test.py]
+python hsenet_test.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+[human-state hsenet_vms.py]
+python hsenet_vms.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+[human-state hsenet_vms_multi.py]
+python hsenet_vms_multi.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+[human-state hsenet_vms_th.py] --> detectron2 모델은 muti-GPU 환경에서의 연산이 불가능하다
+python hsenet_vms_th.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+[human-state hsenet_vms_batch.py] --> 그래서 그냥 batch 형태로 GPU 수만큼 나누어서 각 GPU에 py 파일 올리고 실행(1 GPU 1 model)
+python hsenet_vms_batch.py --config-file /home/ho/WTC_Seoul/wtc_seoul/human_state/configs/mphbe_hsenet_R_50_FPN_3x.yaml MODEL.WEIGHTS /home/ho/WTC_Seoul/wtc_seoul/human_state/model_0269999.pth
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+[human-state hsenet_batch_gaion.py]
+python hsenet_batch_gaion.py
+
+[human-state hsenet_batch_gaion.py] --> GPU 할당 후 실행(ex) 0번 GPU)
+CUDA_VISIBLE_DEVICES=0 python hsenet_batch_gaion.py

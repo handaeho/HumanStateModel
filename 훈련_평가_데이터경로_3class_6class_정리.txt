@@ -1,0 +1,307 @@
+[원래 버전 훈련 명령어 - ETRI에서 준 버전]
+
+python train_net_etri.py --config configs/etri_ver_hsenet_config.yaml --num-gpus 8 --resume
+
+===========================================================================================
+
+[Tensor Board로 학습 상황 체크]
+
+tensorboard --logdir checkpoints/ --port 9999 --bind_all
+
+===========================================================================================
+
+[새로운 버전 훈련 명령어 - F1 Score, Presicion, Recall 등 성능지표 측정]
+
+> just inference
+python hsenet_gaion_train_net.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+> if you want training, remove --eval-only
+python hsenet_gaion_train_net.py --num-gpus 8 --config ./configs/gaion_ver_hsenet_config.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+> 3 Class 훈련
+python hsenet_gaion_train_net_3.py --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./checkpoints/gaion_ver_train_100000_0_02_3class/model_final.pth
+
+> 3 Class 평가
+python hsenet_gaion_train_net_3.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./checkpoints/gaion_ver_train_100000_0_02_3class/model_final.pth
+
+python hsenet_gaion_train_net_3.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./weights/model_100000.pth
+
+> 6 Class 훈련
+python hsenet_gaion_train_net_6.py --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_6.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+> 6 Class 평가
+python hsenet_gaion_train_net_6.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_6.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+===========================================================================================
+
+[FPS 측정] -> gpu-home/tiep/detectron2
+
+python vovnet_train_net.py --eval-only --config=configs/faster_rcnn_V_19_slim_FPNLite_3x_gaion.yaml MODEL.WEIGHTS ./checkpoints/FRCN-V2-19-slim-FPNLite-3x-gaion/model_final.pth
+
+===========================================================================================
+
+[mAP50 측정] -> IHPE test datasets + model_final.pth
+
+python hsenet_gaion_train_net_6.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_6.yaml MODEL.WEIGHTS ./weights/model_final.pth
+
+===========================================================================================
+
+[F1-Score 측정] =====>>>>> 모델 이름 수정 필요(뭘로 쓸건지?)
+
+python hsenet_gaion_train_net_3.py --eval-only --num-gpus 8 --config ./configs/gaion_ver_hsenet_config_3.yaml MODEL.WEIGHTS ./checkpoints/gaion_ver_train_100000_0_02_3class/model_final.pth
+
+===========================================================================================
+
+[데이터셋 경로]
+
+root_path = "/gpu-home/HSENet_dataset/"
+train_path = root_path + "train_datasets/"
+test_path = root_path + "test_datasets/"
+
+===========================================================================================
+
+[ETRI, directing, openAI 학습 데이터셋]
+
+""" Train Datasets """
+# ETRI Train Datasets
+register_coco_instances(name="ETRI_Lying_train", metadata=meta,
+                        json_file=train_path + "etri/ETRI_Lying/annotations/instances_ihp2021_8.json",
+                        image_root=train_path + "etri/ETRI_Lying/images", dataset_source=0)
+register_coco_instances(name="IHPE_train", metadata=meta,
+                        json_file=train_path + "etri/IHPE/annotations/instances_mphbE_train2021.json",
+                        image_root=train_path + "etri/IHPE/train2021", dataset_source=0)
+
+# OpenAI Train Datasets
+register_coco_instances(name="openai_child_train", metadata=meta,
+                        json_file=train_path + "openai/openai_child_train/annotations/openai_child_train.json",
+                        image_root=train_path + "openai/openai_child_train/images", dataset_source=0)
+register_coco_instances(name="openai_senior_train", metadata=meta,
+                        json_file=train_path + "openai/openai_senior_train/annotations/openai_senior_train.json",
+                        image_root=train_path + "openai/openai_senior_train/images", dataset_source=0)
+register_coco_instances(name="openai_subway_train", metadata=meta,
+                        json_file=train_path + "openai/openai_subway_train/annotations/openai_subway_train.json",
+                        image_root=train_path + "openai/openai_subway_train/images", dataset_source=0)
+
+# Directing Train Datasets
+register_coco_instances(name="directing_asem_train", metadata=meta,
+                        json_file=train_path + "directing/directing_asem_train/annotations/directing_asem_train.json",
+                        image_root=train_path + "directing/directing_asem_train/images", dataset_source=0)
+register_coco_instances(name="directing_halles_train", metadata=meta,
+                        json_file=train_path + "directing/directing_halles_train/annotations/directing_halles_train.json",
+                        image_root=train_path + "directing/directing_halles_train/images", dataset_source=0)
+register_coco_instances(name="directing_liveplazaes_train", metadata=meta,
+                        json_file=train_path + "directing/directing_liveplazaes_train/annotations/directing_liveplazaes_train.json",
+                        image_root=train_path + "directing/directing_liveplazaes_train/images", dataset_source=0)
+register_coco_instances(name="directing_post_train", metadata=meta,
+                        json_file=train_path + "directing/directing_post_train/annotations/directing_post_train.json",
+                        image_root=train_path + "directing/directing_post_train/images", dataset_source=0)
+register_coco_instances(name="directing_west_train", metadata=meta,
+                        json_file=train_path + "directing/directing_west_train/annotations/directing_west_train.json",
+                        image_root=train_path + "directing/directing_west_train/images", dataset_source=0)
+register_coco_instances(name="directing_donggyeong_train", metadata=meta,
+                        json_file=train_path + "directing/directing_donggyeong_train/annotations/directing_donggyeong_train.json",
+                        image_root=train_path + "directing/directing_donggyeong_train/images", dataset_source=0)
+register_coco_instances(name="directing_hallinside_train", metadata=meta,
+                        json_file=train_path + "directing/directing_hallinside_train/annotations/directing_hallinside_train.json",
+                        image_root=train_path + "directing/directing_hallinside_train/images", dataset_source=0)
+register_coco_instances(name="directing_liveplazaif_train", metadata=meta,
+                        json_file=train_path + "directing/directing_liveplazaif_train/annotations/directing_liveplazaif_train.json",
+                        image_root=train_path + "directing/directing_liveplazaif_train/images", dataset_source=0)
+register_coco_instances(name="directing_shinhan_train", metadata=meta,
+                        json_file=train_path + "directing/directing_shinhan_train/annotations/directing_shinhan_train.json",
+                        image_root=train_path + "directing/directing_shinhan_train/images", dataset_source=0)
+register_coco_instances(name="directing_zaraes_train", metadata=meta,
+                        json_file=train_path + "directing/directing_zaraes_train/annotations/directing_zaraes_train.json",
+                        image_root=train_path + "directing/directing_zaraes_train/images", dataset_source=0)
+register_coco_instances(name="directing_frontofstore_train", metadata=meta,
+                        json_file=train_path + "directing/directing_frontofstore_train/annotations/directing_frontofstore_train.json",
+                        image_root=train_path + "directing/directing_frontofstore_train/images", dataset_source=0)
+register_coco_instances(name="directing_linko_train", metadata=meta,
+                        json_file=train_path + "directing/directing_linko_train/annotations/directing_linko_train.json",
+                        image_root=train_path + "directing/directing_linko_train/images", dataset_source=0)
+register_coco_instances(name="directing_megabox1f_train", metadata=meta,
+                        json_file=train_path + "directing/directing_megabox1f_train/annotations/directing_megabox1f_train.json",
+                        image_root=train_path + "directing/directing_megabox1f_train/images", dataset_source=0)
+register_coco_instances(name="directing_zarahome_train", metadata=meta,
+                        json_file=train_path + "directing/directing_zarahome_train/annotations/directing_zarahome_train.json",
+                        image_root=train_path + "directing/directing_zarahome_train/images", dataset_source=0)
+register_coco_instances(name="directing_frontoftwee_train", metadata=meta,
+                        json_file=train_path + "directing/directing_frontoftwee_train/annotations/directing_frontoftwee_train.json",
+                        image_root=train_path + "directing/directing_frontoftwee_train/images", dataset_source=0)
+register_coco_instances(name="directing_liveplazab2_train", metadata=meta,
+                        json_file=train_path + "directing/directing_liveplazab2_train/annotations/directing_liveplazab2_train.json",
+                        image_root=train_path + "directing/directing_liveplazab2_train/images", dataset_source=0)
+register_coco_instances(name="directing_megaboxb1_train", metadata=meta,
+                        json_file=train_path + "directing/directing_megaboxb1_train/annotations/directing_megaboxb1_train.json",
+                        image_root=train_path + "directing/directing_megaboxb1_train/images", dataset_source=0)
+register_coco_instances(name="directing_starbucks_train", metadata=meta,
+                        json_file=train_path + "directing/directing_starbucks_train/annotations/directing_starbucks_train.json",
+                        image_root=train_path + "directing/directing_starbucks_train/images", dataset_source=0)
+register_coco_instances(name="directing_smartphone_train", metadata=meta,
+                        json_file=train_path + "directing/directing_smartphone_train/annotations/directing_smartphone_train.json",
+                        image_root=train_path + "directing/directing_smartphone_train/images", dataset_source=0)
+
+===========================================================================================
+
+[ETRI, directing, openAI 테스트 데이터셋]
+
+""" Test Datasets """
+# ETRI Test Dataset
+register_coco_instances(name="IHPE_test", metadata=meta,
+                        json_file=test_path + "etri/IHPE/annotations/instances_mphbE_test2021.json",
+                        image_root=test_path + "etri/IHPE/test2021", dataset_source=0)
+
+# OpenAI Test Dataset
+register_coco_instances(name="openai_senior_test", metadata=meta,
+                        json_file=test_path + "openai/openai_senior_test/annotations/openai_senior_test.json",
+                        image_root=test_path + "openai/openai_senior_test/images", dataset_source=0)
+register_coco_instances(name="openai_subway_test", metadata=meta,
+                        json_file=test_path + "openai/openai_subway_test/annotations/openai_subway_test.json",
+                        image_root=test_path + "openai/openai_subway_test/images", dataset_source=0)
+
+# Directing Test Dataset
+register_coco_instances(name="directing_coex_test", metadata=meta,
+                        json_file=test_path + "directing/directing_coex_test/annotations/directing_coex_test.json",
+                        image_root=test_path + "directing/directing_coex_test/images", dataset_source=0)
+register_coco_instances(name="directing_asem_test", metadata=meta,
+                        json_file=test_path + "directing/directing_asem_test/annotations/directing_asem_test.json",
+                        image_root=test_path + "directing/directing_asem_test/images", dataset_source=0)
+register_coco_instances(name="directing_front_test", metadata=meta,
+                        json_file=test_path + "directing/directing_front_test/annotations/directing_front_test.json",
+                        image_root=test_path + "directing/directing_front_test/images", dataset_source=0)
+register_coco_instances(name="directing_starbucks_test", metadata=meta,
+                        json_file=test_path + "directing/directing_starbucks_test/annotations/directing_starbucks_test.json",
+                        image_root=test_path + "directing/directing_starbucks_test/images", dataset_source=0)
+register_coco_instances(name="directing_smartphone_test", metadata=meta,
+                        json_file=test_path + "directing/directing_smartphone_test/annotations/directing_smartphone_test.json",
+                        image_root=test_path + "directing/directing_smartphone_test/images", dataset_source=0)
+
+===========================================================================================
+
+[ETRI, directing+openAI(통합) 테스트 데이터셋]
+
+""" Test Datasets """
+# ETRI Test Dataset
+register_coco_instances(name="IHPE_test", metadata=meta,
+                        json_file=test_path + "etri/IHPE/annotations/instances_mphbE_test2021.json",
+                        image_root=test_path + "etri/IHPE/test2021", dataset_source=0)
+
+# Directing + OpenAI Dataset
+register_coco_instances(name="directing_openai_test", metadata=meta,
+                        json_file=test_path + "directing_openai/annotations/directing_openai.json",
+                        image_root=test_path + "directing_openai/images", dataset_source=0)
+
+===========================================================================================
+
+[config 파일 데이터셋 이름 기입 - 테스트 데이터셋 ETRI, directing, openAI 버전]
+
+DATASETS:
+  TRAIN: ("ETRI_Lying_train", "IHPE_train", "openai_child_train", "openai_senior_train", "openai_subway_train", "directing_asem_train", "directing_halles_train", "directing_liveplazaes_train", "directing_post_train", "directing_west_train", "directing_donggyeong_train", "directing_hallinside_train", "directing_liveplazaif_train", "directing_shinhan_train", "directing_zaraes_train", "directing_frontofstore_train", "directing_linko_train", "directing_megabox1f_train", "directing_zarahome_train", "directing_frontoftwee_train", "directing_liveplazab2_train", "directing_megaboxb1_train", "directing_starbucks_train", "directing_smartphone_train",)
+  TEST: ("IHPE_test", "openai_senior_test", "openai_subway_test", "directing_coex_test", "directing_asem_test", "directing_front_test", "directing_starbucks_test", "directing_smartphone_test",)
+
+===========================================================================================
+
+[config 파일 데이터셋 이름 기입 - 테스트 데이터셋 ETRI, directing + openAI(통합) 버전]
+
+DATASETS:
+  TRAIN: ("ETRI_Lying_train", "IHPE_train", "openai_child_train", "openai_senior_train", "openai_subway_train", "directing_asem_train", "directing_halles_train", "directing_liveplazaes_train", "directing_post_train", "directing_west_train", "directing_donggyeong_train", "directing_hallinside_train", "directing_liveplazaif_train", "directing_shinhan_train", "directing_zaraes_train", "directing_frontofstore_train", "directing_linko_train", "directing_megabox1f_train", "directing_zarahome_train", "directing_frontoftwee_train", "directing_liveplazab2_train", "directing_megaboxb1_train", "directing_starbucks_train", "directing_smartphone_train",)
+  TEST: ("IHPE_test", "directing_openai_test",)
+
+===========================================================================================
+
+[3 Class 버전]
+
+root_path_3class = "/gpu-home/HSENet_dataset_3categorys/"
+
+""" Train Datasets """
+# ETRI Train Datasets
+register_coco_instances(name="ETRI_Lying_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/instances_ihp2021_8.json",
+                        image_root=train_path + "etri/ETRI_Lying/images", dataset_source=0)
+register_coco_instances(name="IHPE_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/instances_mphbE_train2021.json",
+                        image_root=train_path + "etri/IHPE/train2021", dataset_source=0)
+
+# OpenAI Train Datasets
+register_coco_instances(name="openai_child_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/openai_child_train.json",
+                        image_root=train_path + "openai/openai_child_train/images", dataset_source=0)
+register_coco_instances(name="openai_senior_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/openai_senior_train.json",
+                        image_root=train_path + "openai/openai_senior_train/images", dataset_source=0)
+register_coco_instances(name="openai_subway_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/openai_subway_train.json",
+                        image_root=train_path + "openai/openai_subway_train/images", dataset_source=0)
+
+# Directing Train Datasets
+register_coco_instances(name="directing_asem_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_asem_train.json",
+                        image_root=train_path + "directing/directing_asem_train/images", dataset_source=0)
+register_coco_instances(name="directing_halles_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_halles_train.json",
+                        image_root=train_path + "directing/directing_halles_train/images", dataset_source=0)
+register_coco_instances(name="directing_liveplazaes_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_liveplazaes_train.json",
+                        image_root=train_path + "directing/directing_liveplazaes_train/images", dataset_source=0)
+register_coco_instances(name="directing_post_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_post_train.json",
+                        image_root=train_path + "directing/directing_post_train/images", dataset_source=0)
+register_coco_instances(name="directing_west_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_west_train.json",
+                        image_root=train_path + "directing/directing_west_train/images", dataset_source=0)
+register_coco_instances(name="directing_donggyeong_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_donggyeong_train.json",
+                        image_root=train_path + "directing/directing_donggyeong_train/images", dataset_source=0)
+register_coco_instances(name="directing_hallinside_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_hallinside_train.json",
+                        image_root=train_path + "directing/directing_hallinside_train/images", dataset_source=0)
+register_coco_instances(name="directing_liveplazaif_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_liveplazaif_train.json",
+                        image_root=train_path + "directing/directing_liveplazaif_train/images", dataset_source=0)
+register_coco_instances(name="directing_shinhan_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_shinhan_train.json",
+                        image_root=train_path + "directing/directing_shinhan_train/images", dataset_source=0)
+register_coco_instances(name="directing_zaraes_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_zaraes_train.json",
+                        image_root=train_path + "directing/directing_zaraes_train/images", dataset_source=0)
+register_coco_instances(name="directing_frontofstore_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_frontofstore_train.json",
+                        image_root=train_path + "directing/directing_frontofstore_train/images", dataset_source=0)
+register_coco_instances(name="directing_linko_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_linko_train.json",
+                        image_root=train_path + "directing/directing_linko_train/images", dataset_source=0)
+register_coco_instances(name="directing_megabox1f_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_megabox1f_train.json",
+                        image_root=train_path + "directing/directing_megabox1f_train/images", dataset_source=0)
+register_coco_instances(name="directing_zarahome_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_zarahome_train.json",
+                        image_root=train_path + "directing/directing_zarahome_train/images", dataset_source=0)
+register_coco_instances(name="directing_frontoftwee_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_frontoftwee_train.json",
+                        image_root=train_path + "directing/directing_frontoftwee_train/images", dataset_source=0)
+register_coco_instances(name="directing_liveplazab2_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_liveplazab2_train.json",
+                        image_root=train_path + "directing/directing_liveplazab2_train/images", dataset_source=0)
+register_coco_instances(name="directing_megaboxb1_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_megaboxb1_train.json",
+                        image_root=train_path + "directing/directing_megaboxb1_train/images", dataset_source=0)
+register_coco_instances(name="directing_starbucks_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_starbucks_train.json",
+                        image_root=train_path + "directing/directing_starbucks_train/images", dataset_source=0)
+register_coco_instances(name="directing_smartphone_train", metadata=meta,
+                        json_file=root_path_3class + "train_datasets/directing_smartphone_train.json",
+                        image_root=train_path + "directing/directing_smartphone_train/images", dataset_source=0)
+
+""" Test Datasets """
+# ETRI Test Dataset
+register_coco_instances(name="IHPE_test", metadata=meta,
+                        json_file=root_path_3class + "test_datasets/instances_mphbE_test2021.json",
+                        image_root=test_path + "etri/IHPE/test2021", dataset_source=0)
+
+# Directing + OpenAI Dataset
+register_coco_instances(name="directing_openai_test", metadata=meta,
+                        json_file=root_path_3class + "test_datasets/directing_openai.json",
+                        image_root=test_path + "directing_openai/images", dataset_source=0)
+
+===========================================================================================
+
